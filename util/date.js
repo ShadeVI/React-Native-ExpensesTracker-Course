@@ -1,5 +1,5 @@
 export const getFormattedDate = (date) => {
-  return date?.toLocaleDateString();
+  return date?.toISOString().split("T")[0] ?? "";
 };
 
 export const getDate7DaysAgo = () => {

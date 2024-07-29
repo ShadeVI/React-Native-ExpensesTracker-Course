@@ -2,13 +2,15 @@ import { useLayoutEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import IconButton from "../components/UI/IconButton";
 import { GlobalStyle } from "../constants/styles";
-import Button from "../components/UI/Button";
 import { useExpenses } from "../store/expenses-context";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 
 const ManageExpense = ({ route, navigation }) => {
   const expensesContext = useExpenses();
   const expenseId = route.params?.expenseId;
+  const selectedExpense = expensesContext.expenses.find(
+    (expense) => expense.id === expenseId
+  );
   const isEditing = !!expenseId;
 
   const deleteExpenseHandler = () => {
@@ -18,7 +20,12 @@ const ManageExpense = ({ route, navigation }) => {
 
   const cancelHandler = () => navigation.goBack();
 
-  const confirmHandler = () => {
+  const onSubmitHandler = (expenseData) => {
+    if (isEditing) {
+      expensesContext.updateExpense(expenseId, expenseData);
+    } else {
+      expensesContext.addExpense(expenseData);
+    }
     navigation.goBack();
   };
 
@@ -30,15 +37,12 @@ const ManageExpense = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ExpenseForm />
-      <View style={styles.buttons}>
-        <Button mode="flat" onPress={cancelHandler} style={styles.button}>
-          Cancel
-        </Button>
-        <Button onPress={confirmHandler} style={styles.button}>
-          {isEditing ? "Update" : "Add"}
-        </Button>
-      </View>
+      <ExpenseForm
+        submitButtonLabel={isEditing ? "Update" : "Add"}
+        onCancel={cancelHandler}
+        onSubmit={onSubmitHandler}
+        defaultValues={selectedExpense}
+      />
       {isEditing && (
         <View style={styles.deleteContainer}>
           <IconButton
@@ -66,13 +70,5 @@ const styles = StyleSheet.create({
     borderTopWidth: 2,
     borderTopColor: GlobalStyle.colors.primary200,
     alignItems: "center",
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  button: {
-    flex: 1,
   },
 });

@@ -107,7 +107,7 @@ const expensesReducer = (state, action) => {
       );
       const updatedExpense = { ...expenseToUpdate, ...action.payload.data };
       const updatedExpenses = state.map((expense) =>
-        expense.id === action.id ? updatedExpense : expense
+        expense.id === action.payload.id ? updatedExpense : expense
       );
       return updatedExpenses;
     default:
